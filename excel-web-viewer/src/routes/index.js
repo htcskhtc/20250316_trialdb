@@ -1,15 +1,21 @@
-import express from 'express';
-import ExcelController from '../controllers/excelController';
+const express = require('express');
+const ExcelController = require('../controllers/excelController');
+const ExcelService = require('../services/excelService');
 
 const router = express.Router();
-const excelController = new ExcelController();
+const excelService = new ExcelService('../../UserPassword.xlsx');
+const excelController = new ExcelController(excelService);
 
-export function setRoutes(app) {
+function setRoutes(app) {
     router.get('/', (req, res) => {
         res.render('index');
     });
 
-    router.get('/data', excelController.fetchData);
+    router.get('/api/data', (req, res) => {
+        excelController.fetchData(req, res);
+    });
 
     app.use('/', router);
 }
+
+module.exports = setRoutes;

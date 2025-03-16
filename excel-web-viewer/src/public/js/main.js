@@ -1,3 +1,4 @@
+\main.js
 const fetchData = async () => {
     try {
         const response = await fetch('/api/data');
@@ -12,17 +13,54 @@ const fetchData = async () => {
 };
 
 const displayData = (data) => {
-    const dataContainer = document.getElementById('data-container');
+    const dataContainer = document.getElementById('dataDisplay');
     dataContainer.innerHTML = ''; // Clear previous data
 
+    if (data.length === 0) {
+        dataContainer.innerHTML = '<p>No data available</p>';
+        return;
+    }
+
+    const table = document.createElement('table');
+    table.className = 'table';
+    
+    // Create header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const usernameHeader = document.createElement('th');
+    usernameHeader.textContent = 'Username';
+    const passwordHeader = document.createElement('th');
+    passwordHeader.textContent = 'Password';
+    
+    headerRow.appendChild(usernameHeader);
+    headerRow.appendChild(passwordHeader);
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Create body
+    const tbody = document.createElement('tbody');
     data.forEach(user => {
-        const userDiv = document.createElement('div');
-        userDiv.className = 'user';
-        userDiv.innerHTML = `<strong>Username:</strong> ${user.username} <strong>Password:</strong> ${user.password}`;
-        dataContainer.appendChild(userDiv);
+        const row = document.createElement('tr');
+        const usernameCell = document.createElement('td');
+        usernameCell.textContent = user.username;
+        const passwordCell = document.createElement('td');
+        passwordCell.textContent = user.password;
+        
+        row.appendChild(usernameCell);
+        row.appendChild(passwordCell);
+        tbody.appendChild(row);
     });
+    
+    table.appendChild(tbody);
+    dataContainer.appendChild(table);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchData();
+    const fetchButton = document.getElementById('fetchDataBtn');
+    if (fetchButton) {
+        fetchButton.addEventListener('click', fetchData);
+    } else {
+        // If we're on the data page, fetch automatically
+        fetchData();
+    }
 });

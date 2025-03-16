@@ -1,6 +1,9 @@
+const path = require('path');
+
 class ExcelService {
     constructor(filePath) {
-        this.filePath = filePath;
+        // Resolve the path relative to the project root
+        this.filePath = path.resolve(__dirname, '..', '..', '..', filePath);
     }
 
     async readExcelFile() {
