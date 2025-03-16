@@ -35,6 +35,17 @@
         button:hover {
             background-color: #2980b9;
         }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        #exportJsonBtn {
+            background-color: #27ae60;
+        }
+        #exportJsonBtn:hover {
+            background-color: #219653;
+        }
         .data-container {
             margin-top: 20px;
             border: 1px solid #ddd;
@@ -69,7 +80,10 @@
         <h1>20250316 Trial Database</h1>
         <p>Welcome to the Trial Database Viewer. Use the button below to view user passwords from Excel file.</p>
         
-        <button id="fetchDataBtn">View Excel Password Data</button>
+        <div class="button-group">
+            <button id="fetchDataBtn">View Excel Password Data</button>
+            <button id="exportJsonBtn" disabled>Export as users.json</button>
+        </div>
         <div id="dataDisplay" class="data-container">
             <p>Data will appear here once loaded...</p>
         </div>
@@ -78,7 +92,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const fetchButton = document.getElementById('fetchDataBtn');
+            const exportJsonBtn = document.getElementById('exportJsonBtn');
             const dataDisplay = document.getElementById('dataDisplay');
+            let jsonData = null;
             
             fetchButton.addEventListener('click', async function() {
                 dataDisplay.innerHTML = '<p>Loading data...</p>';
@@ -101,7 +117,12 @@
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     
                     // Convert to JSON
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    // Enable export button if we have data
+                    if (Array.isArray(jsonData) && jsonData.length > 0) {
+                        exportJsonBtn.disabled = false;
+                    }
                     
                     // Create table for username/password data
                     if (Array.isArray(jsonData) && jsonData.length > 0) {
@@ -132,6 +153,25 @@
                 } catch (error) {
                     console.error('Error loading Excel file:', error);
                     dataDisplay.innerHTML = '<p>Error loading data. Make sure the Excel file is available at the correct path.</p>';
+                }
+            });
+            
+            // Add event listener for the export button
+            exportJsonBtn.addEventListener('click', function() {
+                if (jsonData && jsonData.length > 0) {
+                    // Create a JSON string from the data
+                    const jsonString = JSON.stringify(jsonData, null, 2);
+                    
+                    // Create a Blob with the JSON data
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    
+                    // Create a download link and trigger the download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = 'users.json';
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
                 }
             });
         });
