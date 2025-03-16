@@ -66,9 +66,9 @@
 <body>
     <div class="container">
         <h1>20250316 Trial Database</h1>
-        <p>Welcome to the Trial Database Viewer. Use the button below to fetch and view data from the database.</p>
+        <p>Welcome to the Trial Database Viewer. Use the button below to view user passwords from Excel file.</p>
         
-        <button id="fetchDataBtn">View Database Data</button>
+        <button id="fetchDataBtn">View Excel Password Data</button>
         <div id="dataDisplay" class="data-container">
             <p>Data will appear here once loaded...</p>
         </div>
@@ -83,8 +83,8 @@
                 dataDisplay.innerHTML = '<p>Loading data...</p>';
                 
                 try {
-                    // Updated path to point to the data folder in the root
-                    const response = await fetch('./data/users.json');
+                    // Try to access the excel-web-viewer's converted JSON data
+                    const response = await fetch('./excel-web-viewer/src/public/data/users.json');
                     
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -92,36 +92,23 @@
                     
                     const data = await response.json();
                     
-                    // Rest of your code remains the same
+                    // Create table for username/password data
                     if (Array.isArray(data) && data.length > 0) {
-                        // Create table to display data
-                        let tableHTML = '<table><thead><tr>';
+                        let tableHTML = '<table><thead><tr><th>Username</th><th>Password</th></tr></thead><tbody>';
                         
-                        // Create table headers from the keys of the first object
-                        const headers = Object.keys(data[0]);
-                        headers.forEach(header => {
-                            tableHTML += `<th>${header}</th>`;
-                        });
-                        
-                        tableHTML += '</tr></thead><tbody>';
-                        
-                        // Create table rows for each data item
-                        data.forEach(item => {
-                            tableHTML += '<tr>';
-                            headers.forEach(header => {
-                                tableHTML += `<td>${item[header] || ''}</td>`;
-                            });
-                            tableHTML += '</tr>';
+                        // Create table rows for each user
+                        data.forEach(user => {
+                            tableHTML += `<tr><td>${user.username || ''}</td><td>${user.password || ''}</td></tr>`;
                         });
                         
                         tableHTML += '</tbody></table>';
                         dataDisplay.innerHTML = tableHTML;
                     } else {
-                        dataDisplay.innerHTML = '<p>No data available or data is not in the expected format.</p>';
+                        dataDisplay.innerHTML = '<p>No user data available.</p>';
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    dataDisplay.innerHTML = '<p>Error loading data. Please try again later.</p>';
+                    dataDisplay.innerHTML = '<p>Error loading data. Please check if you have run "npm run convert" in the excel-web-viewer directory.</p>';
                 }
             });
         });

@@ -4,7 +4,7 @@ const path = require('path');
 
 async function convertExcelToJson() {
   const workbook = new ExcelJS.Workbook();
-  const excelPath = path.join(__dirname, '..', 'UserPassword.xlsx');
+  const excelPath = path.join(__dirname, '..', '..', 'UserPassword.xlsx'); // Updated path
   const outputPath = path.join(__dirname, '..', 'src', 'public', 'data', 'users.json');
   
   try {
