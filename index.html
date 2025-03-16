@@ -128,20 +128,16 @@
                     if (Array.isArray(jsonData) && jsonData.length > 0) {
                         let tableHTML = '<table><thead><tr>';
                         
-                        // Get headers from the first row
-                        const headers = Object.keys(jsonData[0]);
-                        headers.forEach(header => {
-                            tableHTML += `<th>${header}</th>`;
-                        });
+                        // Only add Username and Role headers
+                        tableHTML += '<th>Username</th><th>Role</th>';
                         
                         tableHTML += '</tr></thead><tbody>';
                         
-                        // Create table rows for each user
+                        // Create table rows with only Username and Role data
                         jsonData.forEach(row => {
                             tableHTML += '<tr>';
-                            headers.forEach(header => {
-                                tableHTML += `<td>${row[header] || ''}</td>`;
-                            });
+                            tableHTML += `<td>${row.Username || ''}</td>`;
+                            tableHTML += `<td>${row.Role || ''}</td>`;
                             tableHTML += '</tr>';
                         });
                         
