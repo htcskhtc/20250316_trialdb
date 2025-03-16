@@ -83,8 +83,8 @@
                 dataDisplay.innerHTML = '<p>Loading data...</p>';
                 
                 try {
-                    // Change this URL to point to your actual data file or API endpoint
-                    const response = await fetch('./data/sample-data.json');
+                    // Updated path to point to the users.json file
+                    const response = await fetch('./excel-web-viewer/src/public/data/users.json');
                     
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -92,6 +92,7 @@
                     
                     const data = await response.json();
                     
+                    // Rest of your code remains the same
                     if (Array.isArray(data) && data.length > 0) {
                         // Create table to display data
                         let tableHTML = '<table><thead><tr>';
