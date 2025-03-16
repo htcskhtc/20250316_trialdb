@@ -62,6 +62,7 @@
             background-color: #f5f5f5;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -83,32 +84,54 @@
                 dataDisplay.innerHTML = '<p>Loading data...</p>';
                 
                 try {
-                    // Try to access the excel-web-viewer's converted JSON data
-                    const response = await fetch('./excel-web-viewer/src/public/data/users.json');
+                    // Fetch the Excel file directly
+                    const response = await fetch('./UserPassword.xlsx');
                     
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     
-                    const data = await response.json();
+                    // Get the Excel file as array buffer
+                    const excelData = await response.arrayBuffer();
+                    
+                    // Parse the Excel file
+                    const workbook = XLSX.read(excelData, { type: 'array' });
+                    
+                    // Get the first worksheet
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
                     
                     // Create table for username/password data
-                    if (Array.isArray(data) && data.length > 0) {
-                        let tableHTML = '<table><thead><tr><th>Username</th><th>Password</th></tr></thead><tbody>';
+                    if (Array.isArray(jsonData) && jsonData.length > 0) {
+                        let tableHTML = '<table><thead><tr>';
+                        
+                        // Get headers from the first row
+                        const headers = Object.keys(jsonData[0]);
+                        headers.forEach(header => {
+                            tableHTML += `<th>${header}</th>`;
+                        });
+                        
+                        tableHTML += '</tr></thead><tbody>';
                         
                         // Create table rows for each user
-                        data.forEach(user => {
-                            tableHTML += `<tr><td>${user.username || ''}</td><td>${user.password || ''}</td></tr>`;
+                        jsonData.forEach(row => {
+                            tableHTML += '<tr>';
+                            headers.forEach(header => {
+                                tableHTML += `<td>${row[header] || ''}</td>`;
+                            });
+                            tableHTML += '</tr>';
                         });
                         
                         tableHTML += '</tbody></table>';
                         dataDisplay.innerHTML = tableHTML;
                     } else {
-                        dataDisplay.innerHTML = '<p>No user data available.</p>';
+                        dataDisplay.innerHTML = '<p>No data available in the Excel file.</p>';
                     }
                 } catch (error) {
-                    console.error('Error fetching data:', error);
-                    dataDisplay.innerHTML = '<p>Error loading data. Please check if you have run "npm run convert" in the excel-web-viewer directory.</p>';
+                    console.error('Error loading Excel file:', error);
+                    dataDisplay.innerHTML = '<p>Error loading data. Make sure the Excel file is available at the correct path.</p>';
                 }
             });
         });
