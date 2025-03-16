@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "convert": "node scripts/convertExcelToJson.js",
+    "build": "npm run convert"
   },
   "dependencies": {
     "express": "^4.17.1",

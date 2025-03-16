@@ -1,7 +1,7 @@
-\main.js
 const fetchData = async () => {
     try {
-        const response = await fetch('/api/data');
+        // Instead of fetching from an API endpoint, fetch the static JSON file
+        const response = await fetch('/data/users.json');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
